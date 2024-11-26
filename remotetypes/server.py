@@ -1,31 +1,33 @@
-"""remotetypes server application."""
+# server.py
 
 import logging
-
+import sys
 import Ice
 
 from remotetypes.factory import Factory
 
-
 class Server(Ice.Application):
-    """Ice.Application for the server."""
+    """Ice.Application para el servidor."""
 
     def __init__(self) -> None:
-        """Initialise the Server objects."""
+        """Inicializa los objetos del servidor."""
         super().__init__()
-        self.logger = logging.getLogger(__file__)
+        self.logger = logging.getLogger(__name__)
 
     def run(self, args: list[str]) -> int:
-        """Execute the main server actions..
+        """Ejecuta las acciones principales del servidor."""
+        properties = self.communicator().getProperties()
+        persistence_dir = properties.getProperty('Persistence.Directory') or 'data'
 
-        It will initialise the needed middleware elements in order to execute the server.
-        """
-        factory_servant = Factory()
         adapter = self.communicator().createObjectAdapter("remotetypes")
-        proxy = adapter.add(factory_servant, self.communicator().stringToIdentity("factory"))
-        self.logger.info('Proxy: "%s"', proxy)
+        factory_servant = Factory(adapter, persistence_dir)
+        proxy = adapter.add(factory_servant, self.communicator().stringToIdentity("Factory"))
+        print(f"Factory is running at: {proxy}")
 
         adapter.activate()
         self.shutdownOnInterrupt()
         self.communicator().waitForShutdown()
         return 0
+
+if __name__ == '__main__':
+    sys.exit(Server().main(sys.argv))
