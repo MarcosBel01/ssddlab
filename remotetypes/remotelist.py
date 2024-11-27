@@ -5,6 +5,7 @@ from typing import Optional
 import os
 import json
 import Ice
+import IcePy
 import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 
 from remotetypes.iterable import ListIterable  # Necesitaremos implementar esto
@@ -84,20 +85,23 @@ class RemoteList(rt.RList):
         if self._identifier:
             self._save_state()
 
-    def pop(self, index: Optional[int] = None, current: Optional[Ice.Current] = None) -> str:
-        """Elimina y devuelve el elemento en la posición index, o el último si no se proporciona."""
+        
+
+    def pop(self, current: Optional[Ice.Current] = None) -> str:
+        """Elimina y devuelve un elemento del conjunto."""
         try:
-            if index is None:
-                item = self._storage.pop()
-            else:
-                item = self._storage.pop(index)
+            item = self._storage.pop()
             self._hash = self._compute_hash()
             self._invalidate_iterators()
             if self._identifier:
                 self._save_state()
             return item
-        except IndexError as error:
-            raise rt.IndexError("Index out of range") from error
+        except KeyError as error:
+            raise rt.KeyError("List is empty") from error
+
+
+
+
 
     def getItem(self, index: int, current: Optional[Ice.Current] = None) -> str:
         """Devuelve el elemento en la posición index."""

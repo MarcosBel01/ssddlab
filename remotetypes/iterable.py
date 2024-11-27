@@ -12,15 +12,15 @@ class BaseIterable(rt.Iterable):
         self._valid = True
         self._data_hash = data_hash
 
-    def next(self, current=None) -> str:
-        """Devuelve el siguiente elemento o lanza una excepción si no hay más."""
-        if not self._valid:
-            raise rt.CancelIteration("Iterator has been invalidated")
+    def next(self, current=None):
+        if self._invalidated:
+            raise rt.CancelIteration()
         if self._index >= len(self._data):
             raise rt.StopIteration()
         item = self._data[self._index]
         self._index += 1
         return item
+
 
     def invalidate(self) -> None:
         """Invalida el iterador para que lance CancelIteration en la siguiente llamada a next."""
