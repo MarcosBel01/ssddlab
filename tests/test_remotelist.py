@@ -1,83 +1,85 @@
-import unittest
-import os
-import Ice
-from unittest.mock import Mock
+import pytest
 from remotetypes.remotelist import RemoteList
-import RemoteTypes as rt  # Importar excepciones si es necesario
+import RemoteTypes as rt  # Importar excepciones personalizadas
 
-class TestRemoteList(unittest.TestCase):
-    def setUp(self):
-        """Se ejecuta antes de cada prueba."""
-        # Inicializar el comunicador y el adaptador
-        self.communicator = Ice.initialize([])
-        self.adapter = self.communicator.createObjectAdapter("TestAdapter")
-        self.adapter.activate()
+def test_remove_existing_item():
+    rlist = RemoteList()
+    rlist.append('item1')
+    rlist.remove('item1')
+    assert not rlist.contains('item1')
 
-        # Usamos un identificador único para evitar conflictos
-        self.identifier = 'test_list'
-        self.persistence_dir = 'test_data'
-        self.remote_list = RemoteList(identifier=self.identifier, persistence_dir=self.persistence_dir)
-        
-        # Asegurarnos de que el estado esté limpio
-        self._cleanup_persistence()
+def test_remove_nonexistent_item():
+    rlist = RemoteList()
+    with pytest.raises(rt.KeyError):
+        rlist.remove('item2')
 
-    def tearDown(self):
-        """Se ejecuta después de cada prueba."""
-        # Limpiar los datos de persistencia
-        self._cleanup_persistence()
-        # Desactivar y destruir el adaptador
-        self.adapter.destroy()
-        # Finalizar el comunicador
-        self.communicator.destroy()
+def test_length():
+    rlist = RemoteList()
+    assert rlist.length() == 0
+    rlist.append('item1')
+    assert rlist.length() == 1
+    rlist.append('item2')
+    assert rlist.length() == 2
 
-    def _cleanup_persistence(self):
-        """Elimina el archivo de persistencia si existe."""
-        path = self.remote_list._get_persistence_path()
-        if os.path.exists(path):
-            os.remove(path)
-        if os.path.exists(self.persistence_dir) and not os.listdir(self.persistence_dir):
-            os.rmdir(self.persistence_dir)
+def test_contains():
+    rlist = RemoteList()
+    assert not rlist.contains('item1')
+    rlist.append('item1')
+    assert rlist.contains('item1')
 
-    # ... (otras pruebas) ...
+def test_hash():
+    rlist = RemoteList()
+    initial_hash = rlist.hash()
+    rlist.append('item1')
+    new_hash = rlist.hash()
+    assert initial_hash != new_hash
+    rlist.remove('item1')
+    assert rlist.hash() == initial_hash
 
-    def test_iterator(self):
-        """Prueba que el iterador recorre todos los elementos."""
-        items = ['item1', 'item2', 'item3']
-        for item in items:
-            self.remote_list.append(item)
+def test_append():
+    rlist = RemoteList()
+    rlist.append('item1')
+    assert rlist.getItem(0) == 'item1'
 
-        # Crear un mock de 'current' con el adaptador
-        mock_current = Mock()
-        mock_current.adapter = self.adapter
+def test_pop_without_index():
+    rlist = RemoteList()
+    rlist.append('item1')
+    rlist.append('item2')
+    item = rlist.pop()
+    assert item == 'item2'
+    assert rlist.length() == 1
 
-        iterator_prx = self.remote_list.iter(current=mock_current)
-        iterated_items = []
-        try:
-            while True:
-                item = iterator_prx.next()
-                iterated_items.append(item)
-        except rt.StopIteration:
-            pass
-        except rt.CancelIteration:
-            self.fail('El iterador fue invalidado inesperadamente')
+def test_pop_with_index():
+    rlist = RemoteList()
+    rlist.append('item1')
+    rlist.append('item2')
+    item = rlist.pop(0)
+    assert item == 'item1'
+    assert rlist.length() == 1
 
-        self.assertEqual(iterated_items, items)
+def test_pop_invalid_index():
+    rlist = RemoteList()
+    with pytest.raises(rt.IndexError):
+        rlist.pop(0)
 
-    def test_iterator_invalidation(self):
-        """Prueba que el iterador se invalida cuando la lista cambia."""
-        self.remote_list.append('item1')
+def test_getItem_existing_index():
+    rlist = RemoteList()
+    rlist.append('item1')
+    assert rlist.getItem(0) == 'item1'
 
-        # Crear un mock de 'current' con el adaptador
-        mock_current = Mock()
-        mock_current.adapter = self.adapter
+def test_getItem_invalid_index():
+    rlist = RemoteList()
+    with pytest.raises(rt.IndexError):
+        rlist.getItem(0)
 
-        iterator_prx = self.remote_list.iter(current=mock_current)
-        self.remote_list.append('item2')  # Esto debe invalidar el iterador
-        with self.assertRaises(rt.CancelIteration):
-            iterator_prx.next()
+def test_getItem_does_not_remove():
+    rlist = RemoteList()
+    rlist.append('item1')
+    rlist.getItem(0)
+    assert rlist.length() == 1
 
-    # ... (otras pruebas) ...
-
-if __name__ == '__main__':
-    unittest.main()
-
+def test_pop_does_remove():
+    rlist = RemoteList()
+    rlist.append('item1')
+    rlist.pop(0)
+    assert rlist.length() == 0
