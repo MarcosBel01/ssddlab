@@ -1,70 +1,70 @@
-# remote-types repository template
+# Práctica de Sistemas Distribuidos 2024/2025
 
-[![Tests](https://github.com/UCLM-ESI/remote-types/actions/workflows/tests.yml/badge.svg)](https://github.com/UCLM-ESI/remote-types/actions/workflows/tests.yml)
-[![Linters](https://github.com/UCLM-ESI/remote-types/actions/workflows/linters.yml/badge.svg)](https://github.com/UCLM-ESI/remote-types/actions/workflows/linters.yml)
-[![Type checking](https://github.com/UCLM-ESI/remote-types/actions/workflows/typechecking.yml/badge.svg)](https://github.com/UCLM-ESI/remote-types/actions/workflows/typechecking.yml)
+Este proyecto implementa una solución distribuida usando Ice en Python. Contiene ejemplos de RDict, RList y RSet, así como un sistema de iteradores para probar los requisitos definidos.
 
-Template for the SSDD laboratory 2024-2025
+## Tabla de Contenidos
+1. Requisitos del Sistema
+2. Instalar Dependencias y compilar Archivos Ice
+3. Ejecución del Proyecto
+4. Descripción de Archivos
+5. Notas adicionales
+6. Autor
 
-## Installation
+## 1. Requisitos del sistema
 
-To locally install the package, just run
+Necesitas tener instalado:
 
-```
-pip install .
-```
+- Python 3.10 o superior
+- Ice (ZeroC Ice) versión 3.7.10
+- Pip (administrador de paquetes de Python)
 
-Or, if you want to modify it during your development,
+## 2. Instalar dependecias y compilar archivos ice
 
-```
-pip install -e .
-```
+Para instalar las dependecias del proyecto: 
 
-## Execution
+pip install -r requirements.txt
 
-To run the template server, just install the package and run
+Para compilar los archivos ice:
 
-```
-remotetypes --Ice.Config=config/remotetypes.config
-```
+slice2py src/remotetypes.ice
 
-## Configuration
 
-This template only allows to configure the server endpoint. To do so, you need to modify
-the file `config/remotetypes.config` and change the existing line.
 
-For example, if you want to make your server to listen always in the same TCP port, your file
-should look like
+## 3. Ejecución del proyecto
 
-```
-remotetypes.Endpoints=tcp -p 10000
-```
+Para iniciar el servidor, debes situarte en la raíz del proyecto y ejecutar:
+(Sustituyendo mi ruta por la de tu caso)
 
-## Running tests and linters locally
+python remotetypes/server.py --Ice.Config=/home/marcos/Escritorio/Universidad/Dist/venv/ssdd-remote-types/config/remotetypes.config
 
-If you want to run the tests and/or linters, you need to install the dependencies for them:
+Normalmente con compilar el server.py debería ir pero en mi caso, no me ha sido posible de otra forma que con este comando.
 
-- To install test dependencies: `pip install .[tests]`
-- To install linters dependencies: `pip install .[linters]`
+Para iniciar el cliente (El cual prueba todos los requisitos) se hace con la siguiente instrucción:
 
-All the tests runners and linters are configured in the `pyproject.toml`.
+python3 client.py
 
-## Continuous integration
+## 4. Descripción de archivos
 
-This repository is already configured to run the following workflows:
+src/client.py: Script principal para probar los requisitos de la práctica.
+src/server.py: Servidor que expone los objetos remotos para que el cliente los utilice.
+src/remotetypes.ice: Definición de los tipos remotos utilizados en el proyecto.
+src/remotetypes/: Implementaciones de RDict, RList, RSet, y los iteradores.
+remotelist.py: Implementación de la clase RList.
+remotedict.py: Implementación de la clase RDict.
+remoteset.py: Implementación de la clase RSet.
+iterable.py: Implementación de la clase base para los iteradores.
+requirements.txt: Lista de dependencias necesarias para el proyecto.
 
-- Ruff: checks the format, code style and docs style of the source code.
-- Pylint: same as Ruff, but it evaluates the code. If the code is rated under a given threshold, it fails.
-- MyPy: checks the types definitions and the usages, showing possible errors.
-- Unit tests: uses `pytest` to run unit tests. The code coverage is quite low. Fixing the tests, checking the
-    test coverage and improving it will make a difference.
+Hay una carpeta .data con todos los .json generados mediante las pruebas, asegurando la persistencia.
+Y también una carpeta tests donde intenté probar los requisitos pero tras varios días de fallos, abandoné esta opción por probar un cliente dedicado para ello.
 
-If you create your repository from this template, you will get all those CI for free.
+## 5. Notas adicionales
 
-## Slice usage
+Puedes ajustar el puerto y el host del servidor editando el archivo server.py o el cliente client.py. Por defecto, el servidor escucha en localhost:10000.
 
-The Slice file is provided inside the `remotetypes` directory. It is only loaded once when the `remotetypes`
-package is loaded by Python. It makes your life much easier, as you don't need to load the Slice in every module
-or submodule that you define.
+Como ya he comentado antes, el cliente está diseñado para probar automáticamente todos los requisitos definidos en la práctica. Los resultados se muestran en la consola, indicando si cada requisito fue cumplido.
 
-The code loading the Slice is inside the `__init__.py` file.
+## 6. Autor
+
+Marcos Isabel Lumbreras
+Correo UCLM: marcos.isabel@alu.uclm.es
