@@ -5,7 +5,10 @@ module RemoteTypes {
     exception IndexError { string message; };
     exception TypeError { string description; };
     exception StopIteration {};
-    exception CancelIteration {};
+    exception CancelIteration {
+        string message;
+    };
+
 
     enum TypeName { RDict, RList, RSet };
 
