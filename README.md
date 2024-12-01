@@ -37,7 +37,7 @@ Para iniciar el servidor, debes situarte en la raíz del proyecto y ejecutar:
 
 python remotetypes/server.py --Ice.Config=/home/marcos/Escritorio/Universidad/Dist/venv/ssdd-remote-types/config/remotetypes.config
 
-Normalmente con compilar el server.py debería ir pero en mi caso, no me ha sido posible de otra forma que con este comando.
+Normalmente con compilar el server.py debería ir, pero en mi caso, no me ha sido posible de otra forma que con este comando.
 
 Para iniciar el cliente (El cual prueba todos los requisitos) se hace con la siguiente instrucción:
 
@@ -46,13 +46,21 @@ python3 client.py
 ## 4. Descripción de archivos
 
 src/client.py: Script principal para probar los requisitos de la práctica.
+
 src/server.py: Servidor que expone los objetos remotos para que el cliente los utilice.
+
 src/remotetypes.ice: Definición de los tipos remotos utilizados en el proyecto.
+
 src/remotetypes/: Implementaciones de RDict, RList, RSet, y los iteradores.
+
 remotelist.py: Implementación de la clase RList.
+
 remotedict.py: Implementación de la clase RDict.
+
 remoteset.py: Implementación de la clase RSet.
+
 iterable.py: Implementación de la clase base para los iteradores.
+
 requirements.txt: Lista de dependencias necesarias para el proyecto.
 
 Hay una carpeta .data con todos los .json generados mediante las pruebas, asegurando la persistencia.
@@ -67,4 +75,5 @@ Como ya he comentado antes, el cliente está diseñado para probar automáticame
 ## 6. Autor
 
 Marcos Isabel Lumbreras
+
 Correo UCLM: marcos.isabel@alu.uclm.es
