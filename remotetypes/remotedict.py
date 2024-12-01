@@ -1,4 +1,7 @@
-# remotedict.py
+"""
+Este módulo implementa la clase RemoteDict, que proporciona una
+interfaz remota para un diccionario distribuido utilizando Ice.
+"""
 
 import os
 import json
@@ -9,10 +12,21 @@ import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
 from remotetypes.iterable import DictIterable  # Necesitaremos implementar esto
 
 class RemoteDict(rt.RDict):
-    """Implementación de la interfaz remota RDict."""
+    """
+    Clase RemoteDict que implementa la interfaz remota RDict.
+
+    Permite almacenar y manipular un diccionario remoto de forma distribuida.
+    """
 
     def __init__(self, identifier: Optional[str] = None, persistence_dir: str = 'data') -> None:
-        """Inicializa un RemoteDict con un diccionario vacío o carga su estado si tiene un identificador."""
+        """
+        Inicializa un RemoteDict con un diccionario vacío o 
+        carga su estado si tiene un identificador.
+
+        Args:
+            identifier (Optional[str]): Identificador del diccionario remoto.
+            persistence_dir (str): Directorio donde se guardará el estado.
+        """
         self._storage = {}
         self._iterators = set()
         self._hash = self._compute_hash()
@@ -22,16 +36,28 @@ class RemoteDict(rt.RDict):
             self._load_state()
 
     def _compute_hash(self) -> int:
-        """Calcula un hash basado en el contenido del diccionario."""
+        """
+        Calcula un hash basado en el contenido del diccionario.
+
+        Returns:
+            int: Hash actual del diccionario.
+        """
         return hash(frozenset(self._storage.items()))
 
     def _get_persistence_path(self) -> str:
-        """Obtiene la ruta completa del archivo de persistencia."""
+        """
+        Obtiene la ruta completa del archivo de persistencia.
+
+        Returns:
+            str: Ruta del archivo de persistencia.
+        """
         filename = f"{self._identifier}.json"
         return os.path.join(self._persistence_dir, filename)
 
     def _load_state(self) -> None:
-        """Carga el estado del diccionario desde el archivo de persistencia."""
+        """
+        Carga el estado del diccionario desde el archivo de persistencia.
+        """
         path = self._get_persistence_path()
         if os.path.exists(path):
             with open(path, 'r') as f:

@@ -1,12 +1,16 @@
-import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
-import Ice
+"""
+Módulo Factory para gestionar la creación y recuperación de objetos remotos.
+"""
+
+# pylint: disable=import-error
+import RemoteTypes as rt  # noqa: F401
 from remotetypes.remotelist import RemoteList
 from remotetypes.remotedict import RemoteDict
 from remotetypes.remoteset import RemoteSet
 
 
 class Factory(rt.Factory):
-    """Implementación de la interfaz Factory."""
+    """Clase Factory para manejar la creación de proxies de objetos remotos."""
 
     def __init__(self, adapter, persistence_dir='data'):
         self._objects = {}
@@ -14,6 +18,19 @@ class Factory(rt.Factory):
         self._persistence_dir = persistence_dir
 
     def get(self, typeName, identifier=None, current=None):
+        """
+        Obtiene un objeto remoto según el tipo y el identificador.
+
+        Args:
+            type_name (TypeName): El tipo de objeto remoto a obtener.
+            current: Contexto actual de Ice.
+
+        Returns:
+            RTypePrx: Proxy al objeto remoto solicitado.
+
+        Raises:
+            ValueError: Si se solicita un tipo inválido.
+        """
         if identifier and identifier in self._objects:
             return self._objects[identifier]
         else:

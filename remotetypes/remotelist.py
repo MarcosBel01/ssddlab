@@ -1,20 +1,32 @@
-"""Needed classes to implement and serve the RList type."""
-
+"""
+Este módulo implementa la clase RemoteDict, que proporciona una
+interfaz remota para un diccionario distribuido utilizando Ice.
+"""
 
 from typing import Optional
 import os
 import json
 import Ice
-import RemoteTypes as rt  # noqa: F401; pylint: disable=import-error
-import IcePy
-
-from remotetypes.iterable import ListIterable  # Necesitaremos implementar esto
+#pylint: disable=import-error
+import RemoteTypes as rt  # noqa: F401;
+from remotetypes.iterable import ListIterable  
 
 class RemoteList(rt.RList):
-    """Implementación de la interfaz remota RList."""
+    """
+    Clase RemoteDict que implementa la interfaz remota RDict.
+
+    Permite almacenar y manipular un diccionario remoto de forma distribuida.
+    """
 
     def __init__(self, identifier: Optional[str] = None, persistence_dir: str = 'data') -> None:
-        """Inicializa una RemoteList con una lista vacía o carga su estado si tiene un identificador."""
+        """
+        Inicializa un RemoteDict con un diccionario vacío o 
+        carga su estado si tiene un identificador.
+
+        Args:
+            identifier (Optional[str]): Identificador del diccionario remoto.
+            persistence_dir (str): Directorio donde se guardará el estado.
+        """
         self._storage = []
         self._iterators = set()
         self._hash = self._compute_hash()
@@ -36,7 +48,7 @@ class RemoteList(rt.RList):
         """Carga el estado de la lista desde el archivo de persistencia."""
         path = self._get_persistence_path()
         if os.path.exists(path):
-            with open(path, 'r') as f:
+            with open(path, 'r',encoding='utf-8') as f:
                 self._storage = json.load(f)
                 self._hash = self._compute_hash()
 
@@ -44,7 +56,7 @@ class RemoteList(rt.RList):
         """Guarda el estado de la lista en el archivo de persistencia."""
         path = self._get_persistence_path()
         os.makedirs(self._persistence_dir, exist_ok=True)
-        with open(path, 'w') as f:
+        with open(path, 'w',encoding='utf-8') as f:
             json.dump(self._storage, f)
 
     def remove(self, item: str, current: Optional[Ice.Current] = None) -> None:
@@ -113,4 +125,3 @@ class RemoteList(rt.RList):
         for iterator in self._iterators:
             iterator.invalidate()
         self._iterators.clear()
-
