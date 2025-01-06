@@ -1,6 +1,6 @@
 import pytest
 from remotetypes.remotedict import RemoteDict
-import RemoteTypes as rt  # Importar excepciones personalizadas
+import RemoteTypes as rt  
 
 def test_remove_existing_key():
     rdict = RemoteDict()

@@ -1,6 +1,6 @@
 import pytest
 from remotetypes.remoteset import RemoteSet
-import RemoteTypes as rt  # Importar excepciones personalizadas
+import RemoteTypes as rt  
 
 def test_remove_existing_item():
     rset = RemoteSet()
@@ -44,7 +44,7 @@ def test_add_new_item():
 def test_add_existing_item():
     rset = RemoteSet()
     rset.add('item1')
-    rset.add('item1')  # No debe añadirlo de nuevo
+    rset.add('item1')  
     assert rset.length() == 1
 
 def test_pop():

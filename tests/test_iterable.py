@@ -3,7 +3,7 @@ import pytest
 from remotetypes.remotelist import RemoteList
 from remotetypes.remotedict import RemoteDict
 from remotetypes.remoteset import RemoteSet
-import RemoteTypes as rt  # Importar excepciones personalizadas
+import RemoteTypes as rt  
 
 def test_iterable_rlist(ice_adapter):
     # Crear el objeto RemoteList y añadir elementos

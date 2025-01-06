@@ -31,8 +31,8 @@
 | 2.6    | RList.hash devuelve enteros iguales         | Si el RList no se modifica, devuelve el mismo valor | Hecho      |
 | 2.7    | RList.hash devuelve enteros diferentes      | Si el RList se modifica, devuelve valor diferente   | Hecho      |
 | 2.8    | RList.append añade un elemento al final     | Se añade un elemento al final del RList             | Hecho      |
-| 2.9.1  | RList.pop devuelve un elemento del final    | Se devuelve el elemento del final del RList         | Pendiente  |
-| 2.9.2  | RList.pop elimina el elemento del final     | Se elimina el elemento del final del RList          | Pendiente  |
+| 2.9.1  | RList.pop devuelve un elemento del final    | Se devuelve el elemento del final del RList         | Hecho      |
+| 2.9.2  | RList.pop elimina el elemento del final     | Se elimina el elemento del final del RList          | Hecho      |
 | 2.10.1 | RList.pop devuelve el elemento indicado     | Se devuelve el elemento de la posición indicada     | Hecho      |
 | 2.10.2 | RList.pop elimina el elemento indicado      | Se elimina el elemento de la posición indicada      | Hecho      |
 | 2.11   | RList.pop lanza la excepción IndexError     | Se lanza la excepción si la posición no existe      | Hecho      |
@@ -64,7 +64,7 @@
 | 4.1    | `iter` devuelve un objeto de tipo Iterable | El método devuelve siempre un proxy válido      | Hecho      |
 | 4.2    | `next` devuelve el elemento siguiente      | Se devuelve el siguiente elemento               | Hecho      |
 | 4.3    | `next` lanza `StopIteration`               | Si se alcanza el final, se lanza la excepción   | Hecho      |
-| 4.4    | `next` lanza `CancelIteration`             | Se lanza cuando el objeto iterado es modificado | Pendiente  |
+| 4.4    | `next` lanza `CancelIteration`             | Se lanza cuando el objeto iterado es modificado | Hecho      |
 
 # Requisitos factoría
 

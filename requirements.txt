@@ -15,3 +15,6 @@ ruff==0.8.0
 tomlkit==0.13.2
 typing_extensions==4.12.2
 zeroc-ice==3.7.10.1
+kafka-python==2.0.2
+confluent-kafka==2.2.0
+

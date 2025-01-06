@@ -20,7 +20,7 @@ def main():
         # 1.1 RDict.remove borra un elemento por clave
         print("\nRequisito 1.1: RDict.remove borra un elemento por clave")
         rdict.setItem('key1', 'value1')
-        rdict.remove('key1')
+        rdict.remove('key2')
         print("Se eliminó 'key1', ¿contiene 'key1'?", rdict.contains('key1'))
 
         # 1.2 RDict.remove lanza KeyError si la clave no existe
