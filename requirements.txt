@@ -10,11 +10,11 @@ platformdirs==4.3.6
 pluggy==1.5.0
 pylint==3.3.1
 pytest==8.3.3
-remotetypes @ file:///home/marcos/Escritorio/Universidad/Dist/venv/ssdd-remote-types
+remotetypes @ file:///home/marcos/Escritorio/Universidad/Distribuidos/.venv/ssdd-remote-types
 ruff==0.8.0
 tomlkit==0.13.2
 typing_extensions==4.12.2
 zeroc-ice==3.7.10.1
-kafka-python==2.0.2
+kafka-python-ng==2.2.3
 confluent-kafka==2.2.0
 
