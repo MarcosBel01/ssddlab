@@ -22,11 +22,11 @@ Necesitas tener instalado:
 
 Para instalar las dependecias del proyecto: 
 
-pip install -r requirements.txt
+>pip install -r requirements.txt
 
 Para compilar los archivos ice:
 
-slice2py src/remotetypes.ice
+>slice2py src/remotetypes.ice
 
 
 
@@ -35,13 +35,14 @@ slice2py src/remotetypes.ice
 Para iniciar el servidor, debes situarte en la raíz del proyecto y ejecutar:
 (Sustituyendo mi ruta por la de tu caso)
 
-python remotetypes/server.py --Ice.Config=/home/marcos/Escritorio/Universidad/Dist/venv/ssdd-remote-types/config/remotetypes.config
+>python remotetypes/server.py --Ice.Config=/home/marcos/Escritorio/Universidad/Dist/venv/ssdd-remote-types/config/remotetypes.config
 
-Normalmente con compilar el server.py debería ir, pero en mi caso, no me ha sido posible de otra forma que con este comando.
+Normalmente con compilar el server.py debería ir, pero en mi caso, no me ha sido posible de otra forma que con este comando. Además si salta un error, es por el path que Python interpreta mal, para solucionarlo hay que poner el siguiente comando:
+>export PYTHONPATH=$PYTHONPATH:$(pwd)
 
-Para iniciar el cliente (El cual prueba todos los requisitos) se hace con la siguiente instrucción:
+Para iniciar el cliente (El cual prueba todos los requisitos) se hace con la siguiente instrucción: (Situándose en /remotetypes)
 
-python3 client.py
+>python3 client.py
 
 ## 4. Descripción de archivos
 
