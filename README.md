@@ -22,7 +22,7 @@ Necesitas tener instalado:
 
 ## 2. Instalar dependecias y compilar archivos ice
 
-Para instalar las dependecias del proyecto: 
+Para instalar las dependecias del proyecto: (Es posible que en este archivo tengas que cambiar la ruta de remotetypes)
 
 >pip install -r requirements.txt
 
@@ -156,7 +156,7 @@ Para cambiar los topics o el bootstrap_servers, ajusta kafka.config y docker-com
 
 Puedes lanzar múltiples instancias de kafkaclient.py para demostrar que con group_id=my_consumer_group se reparte la carga y no se procesan dos veces las mismas operaciones, cumpliendo así uno de los requisitos del entregable 2.
 
-Otra cosa que he de decir es que no he utilizado confluent-kafka, si no la biblioteca kaffa-python-ng ya que no me daba diversos problemas.
+Otra cosa que he de decir es que no he utilizado confluent-kafka, si no la biblioteca kafka-python-ng ya que no me daba diversos problemas.
 
 
 ## 6. Autor
