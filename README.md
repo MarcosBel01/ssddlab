@@ -78,10 +78,13 @@ Otro tipo de ejemplos para probar las operaciones:
 Append (Ejemplo anterior), pop (sin índice), pop (con índice) y getItem, respectivamente:
 >echo '[{"id":"op1","object_identifier":"my_list","object_type":"RList","operation":"append","args":{"item":"Hola Kafka"}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
+
 >echo '[{"id":"op2","object_identifier":"my_list","object_type":"RList","operation":"pop"}]' \
   | kcat -b localhost:9092 -P -t requests_topic
+
 >echo '[{"id":"op3","object_identifier":"my_list","object_type":"RList","operation":"pop","args":{"index":0}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
+
 >echo '[{"id":"op4","object_identifier":"my_list","object_type":"RList","operation":"getItem","args":{"index":0}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
 
@@ -89,8 +92,10 @@ Append (Ejemplo anterior), pop (sin índice), pop (con índice) y getItem, respe
 setItem, getItem y pop, respectivamente:
 >echo '[{"id":"op5","object_identifier":"my_dict","object_type":"RDict","operation":"setItem","args":{"key":"foo","item":"bar"}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
+
 >echo '[{"id":"op6","object_identifier":"my_dict","object_type":"RDict","operation":"getItem","args":{"key":"foo"}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
+
 >echo '[{"id":"op7","object_identifier":"my_dict","object_type":"RDict","operation":"pop","args":{"key":"foo"}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
 
@@ -98,8 +103,10 @@ setItem, getItem y pop, respectivamente:
 add, remove y pop, respectivamente:
 >echo '[{"id":"op8","object_identifier":"my_set","object_type":"RSet","operation":"add","args":{"item":"elem1"}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
+
 >echo '[{"id":"op9","object_identifier":"my_set","object_type":"RSet","operation":"remove","args":{"item":"elem1"}}]' \
   | kcat -b localhost:9092 -P -t requests_topic
+
 >echo '[{"id":"op10","object_identifier":"my_set","object_type":"RSet","operation":"pop"}]' \
   | kcat -b localhost:9092 -P -t requests_topic
 
@@ -149,6 +156,7 @@ Para cambiar los topics o el bootstrap_servers, ajusta kafka.config y docker-com
 
 Puedes lanzar múltiples instancias de kafkaclient.py para demostrar que con group_id=my_consumer_group se reparte la carga y no se procesan dos veces las mismas operaciones, cumpliendo así uno de los requisitos del entregable 2.
 
+Otra cosa que he de decir es que no he utilizado confluent-kafka, si no la biblioteca kaffa-python-ng ya que no me daba diversos problemas.
 
 
 ## 6. Autor
