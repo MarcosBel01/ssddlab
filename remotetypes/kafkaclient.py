@@ -1,19 +1,14 @@
 """
 kafkaclient.py
-Cliente Kafka para consumir operaciones definidas en mensajes JSON,
-ejecutarlas sobre objetos remotos (RDict, RList, RSet) a través de ICE,
-y publicar las respuestas.
+Cliente Kafka necesario para el entregable 2, que se encarga de consumir operaciones definidas en mensajes JSON,
+ejecutarlas sobre objetos remotos (RDict, RList, RSet) a través de ICE, y publicar las respuestas.
 """
 
 import json
 import configparser
 import sys
 from typing import Optional
-
-# kafka-python
 from kafka import KafkaConsumer, KafkaProducer
-
-# Importa tu librería ICE y tus definiciones Slice generadas:
 import Ice
 import RemoteTypes as rt  # pylint: disable=import-error
 
@@ -27,10 +22,7 @@ def load_kafka_config(config_path: str = "../config/kafka.config") -> dict:
     """
     parser = configparser.ConfigParser()
     parser.read(config_path)
-    # Asegúrate de que exista la sección [kafka] en config/kafka.config
     kafka_cfg = parser["kafka"]
-
-    # Retornar únicamente las claves necesarias para KafkaConsumer / KafkaProducer
     return {
         "bootstrap_servers": kafka_cfg["bootstrap_servers"],
         "input_topic": kafka_cfg["input_topic"],
@@ -41,15 +33,16 @@ def load_kafka_config(config_path: str = "../config/kafka.config") -> dict:
 
 def execute_operation(factory: rt.FactoryPrx, op: dict) -> Optional[dict]:
     """
-    Ejecuta una sola operación sobre un objeto remoto.
+    Método que ejecuta una sola operación sobre un objeto remoto.
+    Si falta 'id', no podemos informar de error en el canal de salida (None). (Requisito del entregable)
+    Si la operación es inválida pero sí tenemos 'id', devolvemos un dict con error.
     """
     required_keys = ["id", "object_identifier", "object_type", "operation"]
     for key in required_keys:
         if key not in op:
-            # Si no hay 'id', no podemos ni responder
             if "id" in op:
                 return {"id": op["id"], "status": "error", "error": "InvalidFormat"}
-            return None
+            return None 
 
     op_id = op["id"]
     obj_id = op["object_identifier"]
@@ -57,7 +50,6 @@ def execute_operation(factory: rt.FactoryPrx, op: dict) -> Optional[dict]:
     operation = op["operation"]
     args = op.get("args", {})
 
-    # Obtener proxy remoto
     try:
         if obj_type == "RDict":
             remote_obj = rt.RDictPrx.checkedCast(factory.get(rt.TypeName.RDict, obj_id))
@@ -70,11 +62,11 @@ def execute_operation(factory: rt.FactoryPrx, op: dict) -> Optional[dict]:
     except Exception:
         return {"id": op_id, "status": "error", "error": "FactoryError"}
 
-    # Bloquea operación `iter`
+    # Bloquea operación `iter` (Requisito entregable)
     if operation == "iter":
         return {"id": op_id, "status": "error", "error": "OperationNotSupported"}
 
-    # Lógica según RList, RDict, RSet
+    # Lógica de todos los tipos RList, RDict, RSet
     try:
         if obj_type == "RList":
             if operation == "append":
@@ -126,19 +118,29 @@ def execute_operation(factory: rt.FactoryPrx, op: dict) -> Optional[dict]:
         return {"id": op_id, "status": "error", "error": "UnexpectedError"}
 
 
+def safe_json_deserialize(raw_bytes):
+    """
+    Función auxiliar para deserializar JSON sin que se rompa el consumidor.
+    Si falla, devolvemos None.
+    """
+    try:
+        return json.loads(raw_bytes.decode('utf-8'))
+    except json.JSONDecodeError:
+        return None
+
 def main():
     """
     Punto de entrada principal del cliente Kafka.
-    1. Carga la config
+    1. Lee configuración kafka.config
     2. Inicializa Ice y factoría
-    3. Crea Consumer + Producer
-    4. Consume y produce respuestas
+    3. Crea Consumer + Producer con group_id (varias instancias no duplicarán ops)
+    4. Consume y produce respuestas (en output_topic)
     """
-    # 1. Cargar config
+    
     kafka_cfg = load_kafka_config()  
     print("DEBUG: kafka_cfg =", kafka_cfg)
 
-    # 2. ICE
+   
     with Ice.initialize(sys.argv) as communicator:
         try:
             factory_proxy = communicator.stringToProxy("Factory:tcp -h localhost -p 10000")
@@ -150,13 +152,12 @@ def main():
             print(f"Error inicializando ICE o factoría: {exc}")
             sys.exit(1)
 
-        # 3. Consumidor + Productor
+        
         consumer = KafkaConsumer(
             kafka_cfg["input_topic"],
             bootstrap_servers=kafka_cfg["bootstrap_servers"],
-            group_id=kafka_cfg["group_id"],
+            group_id=kafka_cfg["group_id"],  
             auto_offset_reset='earliest',
-            # Captura JSON inválido
             value_deserializer=lambda raw_bytes: safe_json_deserialize(raw_bytes)
         )
 
@@ -165,15 +166,14 @@ def main():
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
 
-        print(f"Consumidor escuchando en topic '{kafka_cfg['input_topic']}' y "
+        print(f"Consumidor escuchando topic '{kafka_cfg['input_topic']}' y "
               f"produciendo en '{kafka_cfg['output_topic']}'...")
 
-        # 4. Bucle principal
+        
         try:
             for msg in consumer:
                 operations = msg.value
                 if not operations:
-                    # Puede ser None si se parseó mal
                     print("Advertencia: mensaje inválido o vacío")
                     continue
                 if not isinstance(operations, list):
@@ -182,10 +182,10 @@ def main():
 
                 responses = []
                 for op in operations:
-                    response = execute_operation(factory, op)
-                    if response:
-                        responses.append(response)
-
+                    resp = execute_operation(factory, op)
+                    if resp:
+                        responses.append(resp)
+                        
                 if responses:
                     producer.send(kafka_cfg["output_topic"], responses)
                     producer.flush()
@@ -195,17 +195,6 @@ def main():
         finally:
             consumer.close()
             producer.close()
-
-
-def safe_json_deserialize(raw_bytes):
-    """
-    Función auxiliar para deserializar JSON sin que se rompa el consumidor.
-    Si falla, devolvemos None.
-    """
-    try:
-        return json.loads(raw_bytes.decode('utf-8'))
-    except json.JSONDecodeError:
-        return None
 
 
 if __name__ == "__main__":
